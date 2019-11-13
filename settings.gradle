@@ -1,0 +1,2 @@
+include ':app', ':helppiertestlibrary'
+rootProject.name='My Application'
