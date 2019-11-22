@@ -24,11 +24,19 @@ class MainActivity : AppCompatActivity() {
         val buttonListener = View.OnClickListener { view ->
             var scrn = Screenshot()
             val layoutView = findViewById<ConstraintLayout>(R.id.layout);
-            scrn.takeScreenshot(layoutView, screenshotC)
+            scrn.takeScreenshot(this, layoutView, screenshotC)
         }
 
         val button = findViewById<Button>(R.id.button2)
         button.setOnClickListener(buttonListener)
+
+        val uploadListener = View.OnClickListener { view ->
+            var scrn = Screenshot()
+            scrn.uploadScreenshot(this)
+        }
+
+        var uploadBtn = findViewById<Button>(R.id.uploadBtn)
+        uploadBtn.setOnClickListener(uploadListener);
 
 
 
