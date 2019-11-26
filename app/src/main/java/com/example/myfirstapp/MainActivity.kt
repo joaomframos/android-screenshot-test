@@ -2,73 +2,16 @@ package com.example.myfirstapp
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.view.View
-import android.widget.Button
-import android.widget.ImageView
-import androidx.constraintlayout.widget.ConstraintLayout
-// import com.example.helppiertestlibrary.HelppierAPIKT
-// import android.util.Log
-// import android.view.View
-// import com.example.helppiertestlibrary.BannerDrawable
-import com.example.helppiertestlibrary.Screenshot
+import android.widget.LinearLayout
+import com.example.helppiertestlibrary.HelppierApp
 
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        val layoutView = findViewById<LinearLayout>(R.id.layout)
 
-        val screenshotC = findViewById<ImageView>(R.id.screenShot)
-
-        val buttonListener = View.OnClickListener { view ->
-            var scrn = Screenshot()
-            val layoutView = findViewById<ConstraintLayout>(R.id.layout);
-            scrn.takeScreenshot(this, layoutView, screenshotC)
-        }
-
-        val button = findViewById<Button>(R.id.button2)
-        button.setOnClickListener(buttonListener)
-
-        val uploadListener = View.OnClickListener { view ->
-            var scrn = Screenshot()
-            scrn.uploadScreenshot(this)
-        }
-
-        var uploadBtn = findViewById<Button>(R.id.uploadBtn)
-        uploadBtn.setOnClickListener(uploadListener);
-
-
-
-        // var b = findViewById<View>(R.id.textview);
-        // var a = this.getRootView()
-        // var scrn = Screenshot()
-        // Log.i("TakeScreenShotRequest", "Taking screenshot requested")
-
-        // scrn.takeScreenshot(b)
-        /*val button = findViewById<View>(R.id.button)
-        val overlay = button.getOverlay()
-        val bannerDrawable = BannerDrawable()
-        var myRunnable: Runnable = object : Runnable {
-            override fun run() {
-                //top right square
-                bannerDrawable.setBounds(
-                    button.getWidth() / 2,
-                    0,
-                    button.getWidth(),
-                    button.getHeight() / 2
-                );
-                overlay.add(bannerDrawable);
-            }
-        }
-
-
-        button.post(myRunnable)*/
-        // val helpInstance = HelppierAPIKT("Hello");
-        //helpInstance.s(this);
-        //Log.i("Main", HelppierAPI.i);
-        // HelppierApi.
-        // HelppierAPI.s(this)
-        // ToasterMessage.s(this, "Hello")
+        HelppierApp("HELPPIER_FAKE_KEY",this, layoutView).init()
     }
 }

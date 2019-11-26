@@ -1,15 +1,15 @@
 package com.example.helppiertestlibrary;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.os.Environment;
-import android.text.format.DateFormat;
 import android.util.Base64;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -23,16 +23,27 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.util.Date;
 import java.util.Hashtable;
 import java.util.Map;
 
-import static androidx.core.app.ActivityCompat.startActivityForResult;
 
-public class Screenshot {
-    private static final int PICK_FILE_REQUEST = 123;
+public class HelppierApp {
+    private String helppierKey;
+    private Activity activity;
+    private LinearLayout view;
+
+    private View.OnClickListener screenshotListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            takeScreenshot();
+        }
+    };
+
+    public HelppierApp(String helppierKey, Activity activity, LinearLayout view) {
+        this.helppierKey = helppierKey;
+        this.activity = activity;
+        this.view = view;
+    }
 
     private String toBase64(Bitmap bitmap) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -41,24 +52,41 @@ public class Screenshot {
         return Base64.encodeToString(byteArray, Base64.DEFAULT);
     }
 
+    private void renderScreenshotUI() {
+        LayoutInflater layoutInflater = activity.getLayoutInflater();
+        View myView = layoutInflater.inflate(R.layout.screenshot, null, false);
+        view.addView(myView);
 
-    public void takeScreenshot(Activity activity, View view, ImageView screnshotView) {
+
+        Button screenshotC = activity.findViewById(R.id.button);
+        screenshotC.setOnClickListener(screenshotListener);
+    }
+
+    public void init() {
+        renderScreenshotUI();
+    }
+
+    private void renderScreenshot(Bitmap bitmap) {
+        ImageView screenshotView = activity.findViewById(R.id.screenShot);
+
+        Canvas canvas = new Canvas(bitmap);
+        view.draw(canvas);
+
+        screenshotView.setImageBitmap(bitmap);
+    }
+
+
+    private void takeScreenshot() {
         final Activity finalActivity = activity;
-        Date now = new Date();
-        DateFormat.format("yyyy-MM-dd_hh:mm:ss", now);
+
         Log.i("TakeScreenshot", "Taking screenshot");
+
         try {
-            // image naming and path  to include sd card  appending name you choose for file
-            String mPath = Environment.getExternalStorageDirectory().toString() + "/" + now + ".png";
-
-            // create bitmap screen capture
-            // View v1 = activity.getWindow().getDecorView().getRootView();
-            // v1.setDrawingCacheEnabled(true) ;
-            // Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
-            // v1.setDrawingCacheEnabled(false);
-
-            final Bitmap bitmap = Bitmap.createBitmap(view.getWidth(),
-                    view.getHeight(), Bitmap.Config.ARGB_8888);
+            final Bitmap bitmap = Bitmap.createBitmap(
+                    view.getWidth(),
+                    view.getHeight(),
+                    Bitmap.Config.ARGB_8888
+            );
             StringRequest stringRequest = new StringRequest(
                 Request.Method.POST,
             "http://10.0.2.2:3000/widget/android",
@@ -122,41 +150,14 @@ public class Screenshot {
             //Adding request to the queue
             queue.add(stringRequest);
 
-            Canvas canvas = new Canvas(bitmap);
-            view.draw(canvas);
+            renderScreenshot(bitmap);
 
-            screnshotView.setImageBitmap(bitmap);
-/*
-            File imageFile = new File(mPath);
-            FileOutputStream outputStream = new FileOutputStream(imageFile);
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-            outputStream.flush();
-            outputStream.close();*/
 
-/*
-            FileOutputStream outputStream = new FileOutputStream(imageFile);
-            int quality = 100;
-            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream);
-            outputStream.flush();
-            outputStream.close();
-            Log.i("TakeScreenShotEnd", "Taking screenshot succedeed");*/
-
-            // openScreenshot(imageFile);
         } catch (Throwable e) {
             Log.i("TakeScreenShotFailed", "Taking screenshot failed");
 
             // Several error may come out with file handling or DOM
             e.printStackTrace();
         }
-    }
-
-    public void uploadScreenshot(Activity activity) {
-        Intent intent = new Intent();
-        //sets the select file to all types of files
-        intent.setType("*/*");
-        //allows to select data and return it
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        //starts new activity to select file and return data
-        startActivityForResult(activity, Intent.createChooser(intent,"Choose File to Upload.."), PICK_FILE_REQUEST, null);
     }
 }
