@@ -103,14 +103,11 @@ public class HelppierApp {
             "http://10.0.2.2:3000/widget/android",
                 new Response.Listener<String>() {
                     @Override
-                    public void onResponse(String s) {
+                    public void onResponse(String response) {
                         //Showing toast message of the response
                         try {
-                            JSONObject jsonObject = new JSONObject(s);
-                            int responseCode = Integer.parseInt(jsonObject.getString("responseCode"));
-                            String response = jsonObject.getString("response");
-                            if (responseCode == 1) {
-                                Toast.makeText(finalActivity, response, Toast.LENGTH_LONG).show();
+                            if (response != "") {
+                                Toast.makeText(finalActivity, "Image uploaded!", Toast.LENGTH_LONG).show();
                             } else {
                                 Toast.makeText(finalActivity, "Error: " + response, Toast.LENGTH_LONG).show();
                             }
