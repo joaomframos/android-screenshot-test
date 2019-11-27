@@ -31,6 +31,7 @@ public class HelppierApp {
     private String helppierKey;
     private Activity activity;
     private LinearLayout view;
+    private View screenshotUI;
 
     private View.OnClickListener screenshotListener = new View.OnClickListener() {
         @Override
@@ -54,12 +55,16 @@ public class HelppierApp {
 
     private void renderScreenshotUI() {
         LayoutInflater layoutInflater = activity.getLayoutInflater();
-        View myView = layoutInflater.inflate(R.layout.screenshot, null, false);
-        view.addView(myView);
+        screenshotUI = layoutInflater.inflate(R.layout.screenshot, null, false);
+        view.addView(screenshotUI);
 
 
         Button screenshotC = activity.findViewById(R.id.button);
         screenshotC.setOnClickListener(screenshotListener);
+    }
+
+    private void removeScreenshotUI() {
+        view.removeView(screenshotUI);
     }
 
     public void init() {
@@ -82,11 +87,13 @@ public class HelppierApp {
         Log.i("TakeScreenshot", "Taking screenshot");
 
         try {
+            removeScreenshotUI();
             final Bitmap bitmap = Bitmap.createBitmap(
                     view.getWidth(),
                     view.getHeight(),
                     Bitmap.Config.ARGB_8888
             );
+            renderScreenshotUI();
             StringRequest stringRequest = new StringRequest(
                 Request.Method.POST,
             "http://10.0.2.2:3000/widget/android",
