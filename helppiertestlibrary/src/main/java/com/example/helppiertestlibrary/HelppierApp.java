@@ -151,6 +151,7 @@ public class HelppierApp {
 
                     //Adding parameters
                     params.put("base64", image);
+                    params.put("helppierKey", helppierKey);
 
                     //returning parameters
                     return params;
