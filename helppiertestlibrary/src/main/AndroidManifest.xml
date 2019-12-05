@@ -1,14 +1,12 @@
-<manifest
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.helppiertestlibrary"
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.helppiertestlibrary">
 
->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-    <application
-        android:usesCleartextTraffic="true"
-    >
-
+    <application android:usesCleartextTraffic="true">
+        <activity android:name=".OnboardingActivity"></activity>
     </application>
+
 </manifest>

@@ -1,6 +1,7 @@
 package com.example.helppiertestlibrary;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.util.Base64;
@@ -19,7 +20,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.squareup.picasso.Picasso;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
@@ -37,11 +40,15 @@ public class HelppierApp {
     // reference to our screen shot UI
     private View screenshotUI;
 
+    public static final String IMAGES_LIST = "com.example.helppierTestLibrary.IMAGES_LIST";
+
+
     // event listener for the screenshot button
     private View.OnClickListener screenshotListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            takeScreenshot();
+            // takeScreenshot();
+            requestOnboarding();
         }
     };
 
@@ -52,7 +59,17 @@ public class HelppierApp {
     }
 
     public void init() {
+        requestOnboarding();
         renderScreenshotUI();
+    }
+
+    private void renderScreenshot(Bitmap bitmap) {
+        ImageView screenshotView = activity.findViewById(R.id.screenShot);
+
+        Canvas canvas = new Canvas(bitmap);
+        view.draw(canvas);
+
+        screenshotView.setImageBitmap(bitmap);
     }
 
 
@@ -90,9 +107,10 @@ public class HelppierApp {
             // remove our UI from the screenshot
             removeScreenshotUI();
             // take the bitmap / screenshot
+            View windowView = view.getRootView();
             final Bitmap bitmap = Bitmap.createBitmap(
-                    view.getWidth(),
-                    view.getHeight(),
+                    windowView.getWidth(),
+                    windowView.getHeight(),
                     Bitmap.Config.ARGB_8888
             );
             // re-add our UI to enable more screenshots
@@ -100,7 +118,7 @@ public class HelppierApp {
 
             StringRequest stringRequest = new StringRequest(
                 Request.Method.POST,
-            "http://10.0.2.2:3000/widget/android",
+            "http://10.0.2.2:3000/widget/android/screenshot",
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -159,9 +177,85 @@ public class HelppierApp {
             //Adding request to the queue
             queue.add(stringRequest);
 
+            renderScreenshot(bitmap);
+
 
         } catch (Throwable e) {
             Log.i("TakeScreenShotFailed", "Taking screenshot failed");
+
+            // Several error may come out with file handling or DOM
+            e.printStackTrace();
+        }
+    }
+
+    // take the screenshot and upload it
+    private void requestOnboarding() {
+        final Activity finalActivity = activity;
+
+        Log.i("RequestOnboarding", "Request onboarding");
+
+        try {
+            StringRequest stringRequest = new StringRequest(
+                    Request.Method.POST,
+                    "http://10.0.2.2:3000/widget/android/onboarding",
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            //Showing toast message of the response
+                            try {
+                                if (response != "") {
+                                    Log.i("ImagesReceived", response);
+                                    Toast.makeText(finalActivity, "Images received", Toast.LENGTH_LONG).show();
+                                    Intent intent = new Intent(activity, OnboardingActivity.class);
+                                    intent.putExtra(IMAGES_LIST, response);
+                                    activity.startActivity(intent);
+                                } else {
+                                    Toast.makeText(finalActivity, "Error: " + response, Toast.LENGTH_LONG).show();
+                                }
+                            } catch (Exception ex) {
+                                Toast.makeText(finalActivity, "Failed to get images.", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError volleyError) {
+
+                            //Showing toast
+                            try {
+                                JSONObject jsonObject = new JSONObject(volleyError.getMessage());
+                                int responseCode = Integer.parseInt(jsonObject.getString("responseCode"));
+                                String response = jsonObject.getString("response");
+                                if (responseCode == 1) {
+                                    Toast.makeText(finalActivity, response, Toast.LENGTH_LONG).show();
+                                } else {
+                                    Toast.makeText(finalActivity, "Error: " + response, Toast.LENGTH_LONG).show();
+                                }
+                            } catch (Exception ex) {
+                                Toast.makeText(finalActivity, "Failed to get images.", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    }){
+                @Override
+                protected Map<String, String> getParams() throws AuthFailureError {
+                    //Creating parameters
+                    Map<String,String> params = new Hashtable<>();
+
+                    params.put("helppierKey", helppierKey);
+                    params.put("helppierKeAy", "asd");
+
+
+                    //returning parameters
+                    return params;
+                }
+            };
+
+            RequestQueue queue = Volley.newRequestQueue(activity);
+            //Adding request to the queue
+            queue.add(stringRequest);
+
+        } catch (Throwable e) {
+            Log.i("GetScreenShotFailed", "Getting screenshot failed");
 
             // Several error may come out with file handling or DOM
             e.printStackTrace();
