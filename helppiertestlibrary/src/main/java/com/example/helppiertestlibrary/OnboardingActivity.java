@@ -4,9 +4,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
@@ -18,6 +21,8 @@ public class OnboardingActivity extends AppCompatActivity {
     private int totalImages = 0;
     private int currentIndex = 0;
     private JSONArray imagesList;
+    private float swipeStartX;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +36,7 @@ public class OnboardingActivity extends AppCompatActivity {
             totalImages = imagesList.length();
             prepareBtns();
             loadImage();
+            updateCounter(currentIndex);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -46,92 +52,41 @@ public class OnboardingActivity extends AppCompatActivity {
         }
     }
 
-    private void setupNextEventListener(final Button nextBtn, final Button previousBtn) {
+    private void updateCounter(int nextIndex) {
+        TextView counterLabel = findViewById(R.id.counterLabel);
+        String newLabel = (nextIndex + 1) + "/" + totalImages;
+        counterLabel.setText(newLabel);
+    }
+
+
+    private void updateUIAfterAction(int nextIndex) {
+        currentIndex = nextIndex;
+        loadImage();
+        updateButtons(currentIndex);
+        updateCounter(currentIndex);
+    }
+
+    private void setupNextEventListener(Button nextBtn) {
         nextBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                /*final int nextIndex = currentIndex + 1;
-
-                if(totalImages == 0) {
-                    // this should have never happened
-                    nextBtn.setVisibility(View.INVISIBLE);
-                    previousBtn.setVisibility(View.INVISIBLE);
-                    return;
-                }
-
-                // we are out of bounds ; most likely a bug
-                if(totalImages == nextIndex) {
-                    nextBtn.setVisibility(View.INVISIBLE);
-                    previousBtn.setVisibility(View.INVISIBLE);
-                    return;
-                }
-
-                // we will be reaching the last one
-                if(totalImages - 1 == nextIndex) {
-                    currentIndex = nextIndex;
-                    loadImage();
-
-                    nextBtn.setVisibility(View.INVISIBLE);
-                    previousBtn.setVisibility(View.VISIBLE);
-                    return;
-                }
-
-                currentIndex = nextIndex;
-                loadImage();
-
-                // nextBtn.setVisibility(View.VISIBLE);
-                previousBtn.setVisibility(View.VISIBLE);*/
-
-                currentIndex = currentIndex + 1;
-                loadImage();
-                updateButtons(currentIndex);
+                updateUIAfterAction(currentIndex + 1);
 
             }
         });
     }
 
-    private void setupPreviousEventListener(final Button nextBtn, final Button previousBtn) {
+    private void setupPreviousEventListener(Button previousBtn) {
         previousBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
             public void onClick(View v) {
-                /*final int nextIndex = currentIndex - 1;
-
-                if(totalImages == 0) {
-                    // this should have never happened
-                    nextBtn.setVisibility(View.INVISIBLE);
-                    previousBtn.setVisibility(View.INVISIBLE);
-                    return;
-                }
-
-                // we are out of bounds ; most likely a bug
-                if(totalImages == nextIndex) {
-                    nextBtn.setVisibility(View.INVISIBLE);
-                    previousBtn.setVisibility(View.INVISIBLE);
-                    return;
-                }
-
-                // we will be reaching the last one
-                if(nextIndex == 0) {
-                    currentIndex = nextIndex;
-                    loadImage();
-
-                    nextBtn.setVisibility(View.VISIBLE);
-                    previousBtn.setVisibility(View.INVISIBLE);
-                    return;
-                }
-
-                currentIndex = nextIndex;
-                loadImage();
-
-                nextBtn.setVisibility(View.VISIBLE);
-                // previousBtn.setVisibility(View.VISIBLE);*/
-                currentIndex = currentIndex - 1;
-                loadImage();
-                updateButtons(currentIndex);
+                updateUIAfterAction(currentIndex - 1);
             }
         });
     }
 
     private void setupSkipEventListener(Button skipBtn) {
         skipBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
             public void onClick(View v) {
                 finish();
             }
@@ -142,8 +97,10 @@ public class OnboardingActivity extends AppCompatActivity {
         Button nextBtn = findViewById(R.id.nextBtn);
         Button previousBtn = findViewById(R.id.previousBtn);
         Button skipBtn = findViewById(R.id.skipBtn);
+        ImageView image = findViewById(R.id.onboardingimage);
 
         validateBtnVisibility(nextBtn);
+        setupSwipeImageEventListeners(image);
         setupBtnEventListeners(nextBtn, previousBtn, skipBtn);
     }
 
@@ -158,7 +115,8 @@ public class OnboardingActivity extends AppCompatActivity {
         previousBtn.setVisibility(btnStatus[1] ? View.VISIBLE : View.INVISIBLE);
 
         Button skipBtn = findViewById(R.id.skipBtn);
-        skipBtn.setVisibility(btnStatus[2] ? View.VISIBLE : View.INVISIBLE);
+        // skipBtn.setVisibility(btnStatus[2] ? View.VISIBLE : View.INVISIBLE);
+        skipBtn.setText(btnStatus[2] ? "Skip" : "End");
     }
 
     private boolean[] validateTest(int nextIndex) {
@@ -207,8 +165,41 @@ public class OnboardingActivity extends AppCompatActivity {
     }
 
     private void setupBtnEventListeners(Button nextBtn, Button previousBtn, Button skipBtn) {
-        setupNextEventListener(nextBtn, previousBtn);
-        setupPreviousEventListener(nextBtn, previousBtn);
+        setupNextEventListener(nextBtn);
+        setupPreviousEventListener(previousBtn);
         setupSkipEventListener(skipBtn);
+    }
+
+    private void setupSwipeImageEventListeners(ImageView image) {
+        image.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+
+                // have same code as onTouchEvent() (for the Activity) above
+
+                int action = event.getActionMasked();
+                Log.d("ACTION ON TOUCH", String.valueOf(action));
+                switch(action) {
+                    case MotionEvent.ACTION_DOWN:
+                        swipeStartX = event.getX();
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        float swipeEndX = event.getX();
+                        float deltaX = swipeEndX - swipeStartX;
+                        if(Math.abs(deltaX) > 150) {
+                            // left to right
+                            if(swipeEndX > swipeStartX) {
+                                if(currentIndex != 0) updateUIAfterAction(currentIndex - 1);
+                                return true;
+                            }
+
+                            // right to left
+                            if(currentIndex <= totalImages - 1 ) updateUIAfterAction(currentIndex + 1);
+                            return true;
+                        }
+                        break;
+                }
+                return true;
+            }
+        });
     }
 }
