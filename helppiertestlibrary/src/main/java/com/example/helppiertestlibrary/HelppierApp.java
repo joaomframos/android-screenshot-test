@@ -8,6 +8,8 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -60,7 +62,8 @@ public class HelppierApp {
 
     public void init() {
         requestOnboarding();
-        renderScreenshotUI();
+        // renderScreenshotUI();
+        renderWebviewUI();
     }
 
     private void renderScreenshot(Bitmap bitmap) {
@@ -87,9 +90,22 @@ public class HelppierApp {
         screenshotUI = layoutInflater.inflate(R.layout.screenshot, null, false);
         view.addView(screenshotUI);
 
-
         Button screenshotC = activity.findViewById(R.id.button);
         screenshotC.setOnClickListener(screenshotListener);
+    }
+
+    // inflats client activity with our webview UI
+    private void renderWebviewUI() {
+        LayoutInflater layoutInflater = activity.getLayoutInflater();
+        screenshotUI = layoutInflater.inflate(R.layout.webview, null, false);
+        view.addView(screenshotUI);
+
+
+        WebView myWebView = activity.findViewById(R.id.bubbleWebview);
+        WebSettings webSettings = myWebView.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+
+        myWebView.loadUrl("http://10.0.2.2:3000/widget/backoffice/mobilebubble");
     }
 
     // removes the screenshot UI we appended to the clients view
