@@ -2,7 +2,7 @@ package com.example.myfirstapp
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.LinearLayout
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.helppiertestlibrary.HelppierApp
 
 class MainActivity : AppCompatActivity() {
@@ -10,7 +10,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val layoutView = findViewById<LinearLayout>(R.id.layout)
+        val layoutView = findViewById<ConstraintLayout>(R.id.layout)
 
         HelppierApp("HELPPIER_FAKE_KEY",this, layoutView).init()
     }

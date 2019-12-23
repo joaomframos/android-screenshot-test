@@ -38,7 +38,7 @@ public class HelppierApp {
     // the activity that we will be rendering over
     private Activity activity;
     // the current view in use
-    private LinearLayout view;
+    private ConstraintLayout view;
     // reference to our screen shot UI
     private View screenshotUI;
 
@@ -54,7 +54,7 @@ public class HelppierApp {
         }
     };
 
-    public HelppierApp(String helppierKey, Activity activity, LinearLayout view) {
+    public HelppierApp(String helppierKey, Activity activity, ConstraintLayout view) {
         this.helppierKey = helppierKey;
         this.activity = activity;
         this.view = view;
