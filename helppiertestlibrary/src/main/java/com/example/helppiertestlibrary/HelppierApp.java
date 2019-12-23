@@ -12,8 +12,9 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Toast;
+
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -22,9 +23,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.squareup.picasso.Picasso;
-
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
@@ -62,8 +60,8 @@ public class HelppierApp {
 
     public void init() {
         requestOnboarding();
-        // renderScreenshotUI();
-        renderWebviewUI();
+        renderScreenshotUI();
+        // renderWebviewUI();
     }
 
     private void renderScreenshot(Bitmap bitmap) {
