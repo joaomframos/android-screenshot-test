@@ -6,8 +6,11 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.util.Base64;
 import android.util.Log;
+import android.view.FocusFinder;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Button;
@@ -30,6 +33,8 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public class HelppierApp {
@@ -38,7 +43,8 @@ public class HelppierApp {
     // the activity that we will be rendering over
     private Activity activity;
     // the current view in use
-    private ConstraintLayout view;
+    private View view;
+    private ViewGroup vg;
     // reference to our screen shot UI
     private View screenshotUI;
 
@@ -55,7 +61,7 @@ public class HelppierApp {
 
             ConstraintSet constraintSet = new ConstraintSet();
             // constraintSet.clone()
-            constraintSet.clone(view);
+            constraintSet.clone((ConstraintLayout)view);
 
 
             // int targetBtnCode = -1000003;
@@ -66,20 +72,68 @@ public class HelppierApp {
             // constraintSet.connect(v.getId(), ConstraintSet.RIGHT, R.id.randomText, ConstraintSet.RIGHT, 0);
             // constraintSet.connect(v.getId(), ConstraintSet.TOP, R.id.randomText, ConstraintSet.TOP, 0);
             constraintSet.connect(v.getId(), ConstraintSet.BOTTOM, R.id.randomText, ConstraintSet.TOP, 0);
-            constraintSet.applyTo(view);
+            constraintSet.applyTo((ConstraintLayout)view);
         }
     };
 
-    public HelppierApp(String helppierKey, Activity activity, ConstraintLayout view) {
+    public HelppierApp(String helppierKey, Activity activity, View view) {
         this.helppierKey = helppierKey;
         this.activity = activity;
         this.view = view;
+
+
+        ViewGroup vg = (ViewGroup) view;
+        this.vg = vg;
     }
 
     public void init() {
         requestOnboarding();
         renderScreenshotUI();
         // renderWebviewUI();
+
+        //new Timer().scheduleAtFixedRate(new TimerTask() {
+        //    @Override
+        //    public void run() {
+        //        View focusedView = activity.getCurrentFocus();
+        //    }
+        // }, 0, 10000);
+
+
+        view.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+
+                // int[] myIntArray = new int[]{event.getX(), event.getY()};
+                int x = Math.round(event.getX());
+                int y = Math.round(event.getY());
+
+
+
+                for (int i=0; i < vg.getChildCount(); i++) {
+                    View child = vg.getChildAt(i);
+                    if(x > child.getLeft() && x < child.getRight()
+                    && y > child.getTop() && y < child.getBottom()) {
+                        //if(event.getAction() == MotionEvent.ACTION_UP) {
+                            Log.i("Match Element", Integer.toString(child.getId()));
+                        // }
+                    }
+                }
+                // int[] deltas = new int[2];
+                // View nextFocus = FocusFinder.getInstance().findNearestTouchable(vg, x, y, View.FOCUS_LEFT, deltas);
+
+                // view.getLocationOnScreen(myIntArray);
+
+                // Check if the button is PRESSED
+                // if (event.getAction() == MotionEvent.ACTION_DOWN){
+                    //do some thing
+                // }// Check if the button is RELEASED
+                // else if (event.getAction() == MotionEvent.ACTION_UP) {
+                    //do some thing
+                // }
+                // return false;
+                return false;
+            }
+        });
     }
 
     private void renderScreenshot(Bitmap bitmap) {
@@ -115,12 +169,11 @@ public class HelppierApp {
 
         // Button addScreenshot = activity.findViewById(R.id.btnScreenshot);
         // addScreenshot.setOnClickListener(screenshotListener);
-
         TextView topBox = new TextView(activity);
         topBox.setText("TopBox");
         int topBoxId = View.generateViewId();
         topBox.setId(topBoxId);
-        view.addView(topBox);
+        vg.addView(topBox);
         ConstraintLayout.LayoutParams lpTopBox = (ConstraintLayout.LayoutParams) topBox.getLayoutParams();
         lpTopBox.height = 400;
         topBox.setLayoutParams(lpTopBox);
@@ -129,7 +182,7 @@ public class HelppierApp {
         bottomBox.setText("bottomBox");
         final int bottomBoxId = View.generateViewId();
         bottomBox.setId(bottomBoxId);
-        view.addView(bottomBox);
+        vg.addView(bottomBox);
         ConstraintLayout.LayoutParams lpBottomBox = (ConstraintLayout.LayoutParams) bottomBox.getLayoutParams();
         lpBottomBox.height = 400;
         bottomBox.setLayoutParams(lpBottomBox);
@@ -144,17 +197,17 @@ public class HelppierApp {
             @Override
             public void onClick(View v) {
                 ConstraintSet constraintSet = new ConstraintSet();
-                constraintSet.clone(view);
+                constraintSet.clone((ConstraintLayout)view);
                 // constraintSet.connect(btnId, ConstraintSet.BOTTOM, bottomBoxId, ConstraintSet.TOP, 0);
                 constraintSet.connect(btnId, ConstraintSet.TOP, 2131165258, ConstraintSet.BOTTOM, 0);
-                constraintSet.applyTo(view);
+                constraintSet.applyTo((ConstraintLayout)view);
             }
         });
 
-        view.addView(addScreenshot);
+        vg.addView(addScreenshot);
 
         ConstraintSet constraintSet = new ConstraintSet();
-        constraintSet.clone(view);
+        constraintSet.clone((ConstraintLayout)view);
         // placing a textview at the top of the screen
         constraintSet.connect(topBoxId, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START, 0);
         constraintSet.connect(topBoxId, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END, 0);
@@ -168,14 +221,14 @@ public class HelppierApp {
         // constraintSet.connect(btnId, ConstraintSet.TOP, topBoxId, ConstraintSet.BOTTOM, 0);
         // constraintSet.connect(btnId, ConstraintSet.BOTTOM, bottomBoxId, ConstraintSet.TOP, 0);
 
-        constraintSet.applyTo(view);
+        constraintSet.applyTo((ConstraintLayout)view);
     }
 
     // inflats client activity with our webview UI
     private void renderWebviewUI() {
         LayoutInflater layoutInflater = activity.getLayoutInflater();
         screenshotUI = layoutInflater.inflate(R.layout.webview, null, false);
-        view.addView(screenshotUI);
+        vg.addView(screenshotUI);
 
 
         WebView myWebView = activity.findViewById(R.id.bubbleWebview);
@@ -187,7 +240,7 @@ public class HelppierApp {
 
     // removes the screenshot UI we appended to the clients view
     private void removeScreenshotUI() {
-        view.removeView(screenshotUI);
+        vg.removeView(screenshotUI);
     }
 
     // take the screenshot and upload it
