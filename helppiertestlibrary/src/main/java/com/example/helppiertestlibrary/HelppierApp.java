@@ -12,9 +12,11 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -48,7 +50,23 @@ public class HelppierApp {
         @Override
         public void onClick(View v) {
             // takeScreenshot();
-            requestOnboarding();
+            // requestOnboarding();
+
+
+            ConstraintSet constraintSet = new ConstraintSet();
+            // constraintSet.clone()
+            constraintSet.clone(view);
+
+
+            // int targetBtnCode = -1000003;
+            // constraintSet.connect(R.id.button, ConstraintSet.TOP, targetBtnCode, ConstraintSet.BOTTOM);
+            // constraintSet.connect(R.id.button, ConstraintSet.LEFT, targetBtnCode, ConstraintSet.RIGHT);
+
+            // constraintSet.connect(v.getId(), ConstraintSet.LEFT, R.id.randomText, ConstraintSet.LEFT, 0);
+            // constraintSet.connect(v.getId(), ConstraintSet.RIGHT, R.id.randomText, ConstraintSet.RIGHT, 0);
+            // constraintSet.connect(v.getId(), ConstraintSet.TOP, R.id.randomText, ConstraintSet.TOP, 0);
+            constraintSet.connect(v.getId(), ConstraintSet.BOTTOM, R.id.randomText, ConstraintSet.TOP, 0);
+            constraintSet.applyTo(view);
         }
     };
 
@@ -65,12 +83,12 @@ public class HelppierApp {
     }
 
     private void renderScreenshot(Bitmap bitmap) {
-        ImageView screenshotView = activity.findViewById(R.id.screenShot);
+        // ImageView screenshotView = activity.findViewById(R.id.screenShot);
 
-        Canvas canvas = new Canvas(bitmap);
-        view.draw(canvas);
+        // Canvas canvas = new Canvas(bitmap);
+        // view.draw(canvas);
 
-        screenshotView.setImageBitmap(bitmap);
+        // screenshotView.setImageBitmap(bitmap);
     }
 
 
@@ -84,12 +102,73 @@ public class HelppierApp {
 
     // inflates client activity with our screnshot UI
     private void renderScreenshotUI() {
-        LayoutInflater layoutInflater = activity.getLayoutInflater();
-        screenshotUI = layoutInflater.inflate(R.layout.screenshot, null, false);
-        view.addView(screenshotUI);
+        // Button addScreenshot = new Button(activity);
+        // addScreenshot.setText("Capture Screenshota");
+        // int btnId = View.generateViewId();
+        // addScreenshot.setId(btnId);
+        // addScreenshot.setOnClickListener(screenshotListener);
+        // view.addView(addScreenshot);
 
-        Button screenshotC = activity.findViewById(R.id.button);
-        screenshotC.setOnClickListener(screenshotListener);
+        // LayoutInflater layoutInflater = activity.getLayoutInflater();
+        // screenshotUI = layoutInflater.inflate(R.layout.screenshot, null, true);
+        // view.addView(screenshotUI);
+
+        // Button addScreenshot = activity.findViewById(R.id.btnScreenshot);
+        // addScreenshot.setOnClickListener(screenshotListener);
+
+        TextView topBox = new TextView(activity);
+        topBox.setText("TopBox");
+        int topBoxId = View.generateViewId();
+        topBox.setId(topBoxId);
+        view.addView(topBox);
+        ConstraintLayout.LayoutParams lpTopBox = (ConstraintLayout.LayoutParams) topBox.getLayoutParams();
+        lpTopBox.height = 400;
+        topBox.setLayoutParams(lpTopBox);
+
+        TextView bottomBox = new TextView(activity);
+        bottomBox.setText("bottomBox");
+        final int bottomBoxId = View.generateViewId();
+        bottomBox.setId(bottomBoxId);
+        view.addView(bottomBox);
+        ConstraintLayout.LayoutParams lpBottomBox = (ConstraintLayout.LayoutParams) bottomBox.getLayoutParams();
+        lpBottomBox.height = 400;
+        bottomBox.setLayoutParams(lpBottomBox);
+
+        Button addScreenshot = new Button(activity);
+        addScreenshot.setText("Capture Screenshota");
+        final int btnId = View.generateViewId();
+        addScreenshot.setId(btnId);
+        // addScreenshot.setOnClickListener(screenshotListener);
+
+        addScreenshot.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ConstraintSet constraintSet = new ConstraintSet();
+                constraintSet.clone(view);
+                // constraintSet.connect(btnId, ConstraintSet.BOTTOM, bottomBoxId, ConstraintSet.TOP, 0);
+                constraintSet.connect(btnId, ConstraintSet.TOP, 2131165258, ConstraintSet.BOTTOM, 0);
+                constraintSet.applyTo(view);
+            }
+        });
+
+        view.addView(addScreenshot);
+
+        ConstraintSet constraintSet = new ConstraintSet();
+        constraintSet.clone(view);
+        // placing a textview at the top of the screen
+        constraintSet.connect(topBoxId, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START, 0);
+        constraintSet.connect(topBoxId, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END, 0);
+        constraintSet.connect(topBoxId, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, 0);
+
+        // placing a textview at the bottom of the screne
+        constraintSet.connect(bottomBoxId, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START, 0);
+        constraintSet.connect(bottomBoxId, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END, 0);
+        constraintSet.connect(bottomBoxId, ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM, 0);
+
+        // constraintSet.connect(btnId, ConstraintSet.TOP, topBoxId, ConstraintSet.BOTTOM, 0);
+        // constraintSet.connect(btnId, ConstraintSet.BOTTOM, bottomBoxId, ConstraintSet.TOP, 0);
+
+        constraintSet.applyTo(view);
     }
 
     // inflats client activity with our webview UI
