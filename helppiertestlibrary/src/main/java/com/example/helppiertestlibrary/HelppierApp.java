@@ -115,6 +115,29 @@ public class HelppierApp {
         constraintSet.constrainDefaultHeight(layoutId, ConstraintSet.MATCH_CONSTRAINT_SPREAD);
         constraintSet.constrainDefaultWidth(layoutId, ConstraintSet.MATCH_CONSTRAINT_SPREAD);
         constraintSet.applyTo((ConstraintLayout)view);
+
+        layout.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+                int x = Math.round(event.getX());
+                int y = Math.round(event.getY());
+
+
+
+                for (int i=0; i < vg.getChildCount(); i++) {
+                    View child = vg.getChildAt(i);
+                    if(x > child.getLeft() && x < child.getRight()
+                    && y > child.getTop() && y < child.getBottom()) {
+                        if(event.getAction() == MotionEvent.ACTION_UP) {
+                            // TODO: currently triggering the target element first and then our overlay
+                            Log.i("Match Element", Integer.toString(child.getId()));
+                        }
+                    }
+                }
+
+                return true;
+            }
+        });
     }
 
     public void init() {
