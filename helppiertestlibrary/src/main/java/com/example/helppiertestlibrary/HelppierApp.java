@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.util.Base64;
 import android.util.Log;
 import android.view.FocusFinder;
@@ -15,6 +16,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -84,12 +86,42 @@ public class HelppierApp {
 
         ViewGroup vg = (ViewGroup) view;
         this.vg = vg;
+
+    }
+
+    private void renderOverlay() {
+
+        LinearLayout layout = new LinearLayout(activity);
+        int layoutId = View.generateViewId();
+        layout.setId(layoutId);
+        // layout.setBackgroundColor(Color.parseColor("#00611C1C"));
+        layout.setBackgroundColor(Color.RED);
+        layout.setAlpha(0.5f);
+        layout.setElevation(10f);
+        layout.setOrientation(LinearLayout.HORIZONTAL);
+
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, 0);
+
+        layout.setLayoutParams(lp);
+
+        vg.addView(layout);
+
+        ConstraintSet constraintSet = new ConstraintSet();
+        constraintSet.clone((ConstraintLayout)view);
+        constraintSet.connect(layoutId, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START, 0);
+        constraintSet.connect(layoutId, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END, 0);
+        constraintSet.connect(layoutId, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, 0);
+        constraintSet.connect(layoutId, ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM, 0);
+        constraintSet.constrainDefaultHeight(layoutId, ConstraintSet.MATCH_CONSTRAINT_SPREAD);
+        constraintSet.constrainDefaultWidth(layoutId, ConstraintSet.MATCH_CONSTRAINT_SPREAD);
+        constraintSet.applyTo((ConstraintLayout)view);
     }
 
     public void init() {
         requestOnboarding();
         renderScreenshotUI();
         // renderWebviewUI();
+        renderOverlay();
 
         //new Timer().scheduleAtFixedRate(new TimerTask() {
         //    @Override
