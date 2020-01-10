@@ -1,5 +1,6 @@
 package com.example.helppiertestlibrary;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -17,6 +18,7 @@ import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,6 +35,7 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.lang.annotation.Target;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Timer;
@@ -89,6 +92,31 @@ public class HelppierApp {
 
     }
 
+    private void positionOverlay(View layout, int layoutId) {
+        if(view instanceof ConstraintLayout) {
+            ConstraintSet constraintSet = new ConstraintSet();
+            constraintSet.clone((ConstraintLayout)view);
+            constraintSet.connect(layoutId, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START, 0);
+            constraintSet.connect(layoutId, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END, 0);
+            constraintSet.connect(layoutId, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, 0);
+            constraintSet.connect(layoutId, ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM, 0);
+            constraintSet.constrainDefaultHeight(layoutId, ConstraintSet.MATCH_CONSTRAINT_SPREAD);
+            constraintSet.constrainDefaultWidth(layoutId, ConstraintSet.MATCH_CONSTRAINT_SPREAD);
+            constraintSet.applyTo((ConstraintLayout)view);
+        } else if(view instanceof LinearLayout) {
+            // does not work
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+            layout.setLayoutParams(params);
+        } else if(view instanceof RelativeLayout) {
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)layout.getLayoutParams();
+            params.height = RelativeLayout.LayoutParams.MATCH_PARENT;
+            params.width = RelativeLayout.LayoutParams.MATCH_PARENT;
+            params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+            layout.setLayoutParams(params);
+        }
+    }
+
+    @TargetApi(21)
     private void renderOverlay() {
 
         LinearLayout layout = new LinearLayout(activity);
@@ -106,15 +134,7 @@ public class HelppierApp {
 
         vg.addView(layout);
 
-        ConstraintSet constraintSet = new ConstraintSet();
-        constraintSet.clone((ConstraintLayout)view);
-        constraintSet.connect(layoutId, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START, 0);
-        constraintSet.connect(layoutId, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END, 0);
-        constraintSet.connect(layoutId, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, 0);
-        constraintSet.connect(layoutId, ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM, 0);
-        constraintSet.constrainDefaultHeight(layoutId, ConstraintSet.MATCH_CONSTRAINT_SPREAD);
-        constraintSet.constrainDefaultWidth(layoutId, ConstraintSet.MATCH_CONSTRAINT_SPREAD);
-        constraintSet.applyTo((ConstraintLayout)view);
+        positionOverlay(layout, layoutId);
 
         layout.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -122,15 +142,16 @@ public class HelppierApp {
                 int x = Math.round(event.getX());
                 int y = Math.round(event.getY());
 
-
+                int elementId = view.getId();
 
                 for (int i=0; i < vg.getChildCount(); i++) {
                     View child = vg.getChildAt(i);
-                    if(x > child.getLeft() && x < child.getRight()
+                    int childId = child.getId();
+                    if(childId != elementId
+                    && x > child.getLeft() && x < child.getRight()
                     && y > child.getTop() && y < child.getBottom()) {
                         if(event.getAction() == MotionEvent.ACTION_UP) {
-                            // TODO: currently triggering the target element first and then our overlay
-                            Log.i("Match Element", Integer.toString(child.getId()));
+                            Log.i("Match Element", Integer.toString(childId));
                         }
                     }
                 }
@@ -142,7 +163,7 @@ public class HelppierApp {
 
     public void init() {
         requestOnboarding();
-        renderScreenshotUI();
+        // renderScreenshotUI();
         // renderWebviewUI();
         renderOverlay();
 
@@ -154,25 +175,25 @@ public class HelppierApp {
         // }, 0, 10000);
 
 
-        view.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent event) {
+        // view.setOnTouchListener(new View.OnTouchListener() {
+            // @Override
+            // public boolean onTouch(View view, MotionEvent event) {
 
                 // int[] myIntArray = new int[]{event.getX(), event.getY()};
-                int x = Math.round(event.getX());
-                int y = Math.round(event.getY());
+                // int x = Math.round(event.getX());
+                // int y = Math.round(event.getY());
 
 
 
-                for (int i=0; i < vg.getChildCount(); i++) {
-                    View child = vg.getChildAt(i);
-                    if(x > child.getLeft() && x < child.getRight()
-                    && y > child.getTop() && y < child.getBottom()) {
+               // for (int i=0; i < vg.getChildCount(); i++) {
+                    //View child = vg.getChildAt(i);
+                   // if(x > child.getLeft() && x < child.getRight()
+                 //   && y > child.getTop() && y < child.getBottom()) {
                         //if(event.getAction() == MotionEvent.ACTION_UP) {
-                            Log.i("Match Element", Integer.toString(child.getId()));
+               //             Log.i("Match Element", Integer.toString(child.getId()));
                         // }
-                    }
-                }
+             //       }
+           //     }
                 // int[] deltas = new int[2];
                 // View nextFocus = FocusFinder.getInstance().findNearestTouchable(vg, x, y, View.FOCUS_LEFT, deltas);
 
@@ -186,9 +207,9 @@ public class HelppierApp {
                     //do some thing
                 // }
                 // return false;
-                return false;
-            }
-        });
+                //return false;
+        //    }
+        // });
     }
 
     private void renderScreenshot(Bitmap bitmap) {
@@ -229,7 +250,7 @@ public class HelppierApp {
         int topBoxId = View.generateViewId();
         topBox.setId(topBoxId);
         vg.addView(topBox);
-        ConstraintLayout.LayoutParams lpTopBox = (ConstraintLayout.LayoutParams) topBox.getLayoutParams();
+        ViewGroup.LayoutParams lpTopBox = topBox.getLayoutParams();
         lpTopBox.height = 400;
         topBox.setLayoutParams(lpTopBox);
 
@@ -238,7 +259,7 @@ public class HelppierApp {
         final int bottomBoxId = View.generateViewId();
         bottomBox.setId(bottomBoxId);
         vg.addView(bottomBox);
-        ConstraintLayout.LayoutParams lpBottomBox = (ConstraintLayout.LayoutParams) bottomBox.getLayoutParams();
+        ViewGroup.LayoutParams lpBottomBox = bottomBox.getLayoutParams();
         lpBottomBox.height = 400;
         bottomBox.setLayoutParams(lpBottomBox);
 
