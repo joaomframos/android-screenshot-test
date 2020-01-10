@@ -93,12 +93,20 @@ public class HelppierApp {
 
     }
 
-    private void positionWebViewRelativeToElement(int webviewId, int elementId) {
-        ConstraintSet constraintSet = new ConstraintSet();
-        constraintSet.clone((ConstraintLayout)view);
-        // constraintSet.connect(elementId, ConstraintSet.BOTTOM, webviewId, ConstraintSet.TOP, 0);
-        constraintSet.connect(webviewId, ConstraintSet.TOP, elementId, ConstraintSet.BOTTOM, 0);
-        constraintSet.applyTo((ConstraintLayout)view);
+    private void positionWebViewRelativeToElement(WebView webview, int elementId) {
+        if(view instanceof ConstraintLayout) {
+            ConstraintSet constraintSet = new ConstraintSet();
+            constraintSet.clone((ConstraintLayout) view);
+            // constraintSet.connect(elementId, ConstraintSet.BOTTOM, webviewId, ConstraintSet.TOP, 0);
+            constraintSet.connect(webview.getId(), ConstraintSet.TOP, elementId, ConstraintSet.BOTTOM, 0);
+            constraintSet.applyTo((ConstraintLayout) view);
+        } else if(view instanceof RelativeLayout) {
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)webview.getLayoutParams();
+            params.height = RelativeLayout.LayoutParams.MATCH_PARENT;
+            params.width = RelativeLayout.LayoutParams.MATCH_PARENT;
+            params.addRule(RelativeLayout.ALIGN_TOP, elementId);
+            webview.setLayoutParams(params);
+        }
     }
 
     private void positionOverlay(View layout, int layoutId) {
@@ -128,49 +136,54 @@ public class HelppierApp {
     @TargetApi(21)
     private void renderOverlay() {
 
-        LinearLayout layout = new LinearLayout(activity);
-        int layoutId = View.generateViewId();
-        layout.setId(layoutId);
-        // layout.setBackgroundColor(Color.parseColor("#00611C1C"));
-        layout.setBackgroundColor(Color.RED);
-        layout.setAlpha(0.5f);
-        layout.setElevation(10f);
-        layout.setOrientation(LinearLayout.HORIZONTAL);
+        if(view instanceof ConstraintLayout || view instanceof  RelativeLayout) {
+            LinearLayout layout = new LinearLayout(activity);
+            int layoutId = View.generateViewId();
+            layout.setId(layoutId);
+            // layout.setBackgroundColor(Color.parseColor("#00611C1C"));
+            layout.setBackgroundColor(Color.RED);
+            layout.setAlpha(0.5f);
+            layout.setElevation(10f);
+            layout.setOrientation(LinearLayout.HORIZONTAL);
 
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, 0);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, 0);
 
-        layout.setLayoutParams(lp);
+            layout.setLayoutParams(lp);
 
-        vg.addView(layout);
+            vg.addView(layout);
 
-        positionOverlay(layout, layoutId);
+            positionOverlay(layout, layoutId);
 
-        layout.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent event) {
-                int x = Math.round(event.getX());
-                int y = Math.round(event.getY());
+            layout.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View view, MotionEvent event) {
+                    int x = Math.round(event.getX());
+                    int y = Math.round(event.getY());
 
-                int elementId = view.getId();
+                    int elementId = view.getId();
 
-                for (int i=0; i < vg.getChildCount(); i++) {
-                    View child = vg.getChildAt(i);
-                    int childId = child.getId();
-                    if(childId != elementId
-                    && x > child.getLeft() && x < child.getRight()
-                    && y > child.getTop() && y < child.getBottom()) {
-                        if(event.getAction() == MotionEvent.ACTION_UP) {
-                            Log.i("Match Element", Integer.toString(childId));
-                            int webviewId = renderWebviewUI();
-                            positionWebViewRelativeToElement(webviewId, childId);
+                    for (int i = 0; i < vg.getChildCount(); i++) {
+                        View child = vg.getChildAt(i);
+                        int childId = child.getId();
+                        if (childId != elementId
+                                && x > child.getLeft() && x < child.getRight()
+                                && y > child.getTop() && y < child.getBottom()) {
+                            if (event.getAction() == MotionEvent.ACTION_UP) {
+                                Log.i("Match Element", Integer.toString(childId));
+                                WebView webview = renderWebviewUI();
+                                positionWebViewRelativeToElement(webview, childId);
 
+                            }
                         }
                     }
-                }
 
-                return true;
-            }
-        });
+                    return true;
+                }
+            });
+            return;
+        }
+
+        Toast.makeText(activity, "This layout does not support selection", Toast.LENGTH_SHORT).show();
     }
 
     public void init() {
@@ -313,7 +326,7 @@ public class HelppierApp {
     }
 
     // inflates client activity with our webview UI
-    private int renderWebviewUI() {
+    private WebView renderWebviewUI() {
         WebView myWebView = new WebView(activity);
         int webviewId = View.generateViewId();
         myWebView.setId(webviewId);
@@ -331,7 +344,7 @@ public class HelppierApp {
         lpWebView.width = 270;
         myWebView.setLayoutParams(lpWebView);
 
-        return webviewId;
+        return myWebView;
     }
 
     // removes the screenshot UI we appended to the clients view
