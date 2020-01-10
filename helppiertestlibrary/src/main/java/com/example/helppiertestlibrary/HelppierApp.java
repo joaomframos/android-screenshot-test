@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -92,6 +93,14 @@ public class HelppierApp {
 
     }
 
+    private void positionWebViewRelativeToElement(int webviewId, int elementId) {
+        ConstraintSet constraintSet = new ConstraintSet();
+        constraintSet.clone((ConstraintLayout)view);
+        // constraintSet.connect(elementId, ConstraintSet.BOTTOM, webviewId, ConstraintSet.TOP, 0);
+        constraintSet.connect(webviewId, ConstraintSet.TOP, elementId, ConstraintSet.BOTTOM, 0);
+        constraintSet.applyTo((ConstraintLayout)view);
+    }
+
     private void positionOverlay(View layout, int layoutId) {
         if(view instanceof ConstraintLayout) {
             ConstraintSet constraintSet = new ConstraintSet();
@@ -152,6 +161,9 @@ public class HelppierApp {
                     && y > child.getTop() && y < child.getBottom()) {
                         if(event.getAction() == MotionEvent.ACTION_UP) {
                             Log.i("Match Element", Integer.toString(childId));
+                            int webviewId = renderWebviewUI();
+                            positionWebViewRelativeToElement(webviewId, childId);
+
                         }
                     }
                 }
@@ -300,18 +312,26 @@ public class HelppierApp {
         constraintSet.applyTo((ConstraintLayout)view);
     }
 
-    // inflats client activity with our webview UI
-    private void renderWebviewUI() {
-        LayoutInflater layoutInflater = activity.getLayoutInflater();
-        screenshotUI = layoutInflater.inflate(R.layout.webview, null, false);
-        vg.addView(screenshotUI);
+    // inflates client activity with our webview UI
+    private int renderWebviewUI() {
+        WebView myWebView = new WebView(activity);
+        int webviewId = View.generateViewId();
+        myWebView.setId(webviewId);
 
+        myWebView.setWebViewClient(new WebViewClient());
 
-        WebView myWebView = activity.findViewById(R.id.bubbleWebview);
         WebSettings webSettings = myWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
 
         myWebView.loadUrl("http://10.0.2.2:3000/widget/backoffice/mobilebubble");
+        vg.addView(myWebView);
+
+        ViewGroup.LayoutParams lpWebView = myWebView.getLayoutParams();
+        lpWebView.height = 426;
+        lpWebView.width = 270;
+        myWebView.setLayoutParams(lpWebView);
+
+        return webviewId;
     }
 
     // removes the screenshot UI we appended to the clients view
