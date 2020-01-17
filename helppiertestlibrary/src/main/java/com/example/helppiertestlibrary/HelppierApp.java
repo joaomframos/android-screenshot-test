@@ -4,20 +4,14 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.util.Base64;
 import android.util.Log;
-import android.view.FocusFinder;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -36,12 +30,8 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
-import java.lang.annotation.Target;
 import java.util.Hashtable;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
-
 
 public class HelppierApp {
     // helppier authentication key
@@ -102,8 +92,8 @@ public class HelppierApp {
             constraintSet.applyTo((ConstraintLayout) view);
         } else if(view instanceof RelativeLayout) {
             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)webview.getLayoutParams();
-            params.height = RelativeLayout.LayoutParams.MATCH_PARENT;
-            params.width = RelativeLayout.LayoutParams.MATCH_PARENT;
+            params.height = RelativeLayout.LayoutParams.WRAP_CONTENT;
+            params.width = RelativeLayout.LayoutParams.WRAP_CONTENT;
             params.addRule(RelativeLayout.ALIGN_TOP, elementId);
             webview.setLayoutParams(params);
         }
@@ -137,7 +127,7 @@ public class HelppierApp {
     private void renderOverlay() {
 
         if(view instanceof ConstraintLayout || view instanceof  RelativeLayout) {
-            LinearLayout layout = new LinearLayout(activity);
+            final LinearLayout layout = new LinearLayout(activity);
             int layoutId = View.generateViewId();
             layout.setId(layoutId);
             // layout.setBackgroundColor(Color.parseColor("#00611C1C"));
@@ -157,6 +147,7 @@ public class HelppierApp {
             layout.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View view, MotionEvent event) {
+                    // new BubbleWebView(activity);
                     int x = Math.round(event.getX());
                     int y = Math.round(event.getY());
 
@@ -170,8 +161,8 @@ public class HelppierApp {
                                 && y > child.getTop() && y < child.getBottom()) {
                             if (event.getAction() == MotionEvent.ACTION_UP) {
                                 Log.i("Match Element", Integer.toString(childId));
-                                WebView webview = renderWebviewUI();
-                                positionWebViewRelativeToElement(webview, childId);
+                                BubbleWebView webview = renderWebviewUI(childId);
+                                vg.removeView(layout);
 
                             }
                         }
@@ -326,24 +317,11 @@ public class HelppierApp {
     }
 
     // inflates client activity with our webview UI
-    private WebView renderWebviewUI() {
-        WebView myWebView = new WebView(activity);
-        int webviewId = View.generateViewId();
-        myWebView.setId(webviewId);
-
-        myWebView.setWebViewClient(new WebViewClient());
-
-        WebSettings webSettings = myWebView.getSettings();
-        webSettings.setJavaScriptEnabled(true);
-
-        myWebView.loadUrl("http://10.0.2.2:3000/widget/backoffice/mobilebubble");
+    private BubbleWebView renderWebviewUI(int childId) {
+        BubbleWebView myWebView = new BubbleWebView(activity, view, childId);
+        myWebView.setId(123);
         vg.addView(myWebView);
-
-        ViewGroup.LayoutParams lpWebView = myWebView.getLayoutParams();
-        lpWebView.height = 426;
-        lpWebView.width = 270;
-        myWebView.setLayoutParams(lpWebView);
-
+        myWebView.position();
         return myWebView;
     }
 
@@ -359,7 +337,7 @@ public class HelppierApp {
         Log.i("TakeScreenshot", "Taking screenshot");
 
         try {
-            // remove our UI from the screenshot
+            // remove our UI from the screenshotq
             removeScreenshotUI();
             // take the bitmap / screenshot
             View windowView = view.getRootView();
