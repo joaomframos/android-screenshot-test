@@ -3,7 +3,6 @@ package com.example.helppiertestlibrary;
 import android.app.Activity;
 import android.content.Context;
 import android.webkit.JavascriptInterface;
-import android.widget.Toast;
 
 public class BubbleWebViewInterface {
     Context mContext;
@@ -18,10 +17,10 @@ public class BubbleWebViewInterface {
     /** Show a toast from the web page */
     @JavascriptInterface
     public void getBubbleSize(final int width, final int height) {
-
         ((Activity) mContext).runOnUiThread(new Runnable() {
             public void run() {
                 bubbleWebView.setSize(width, height);
+                bubbleWebView.positionBubble();
             }
         });
     }

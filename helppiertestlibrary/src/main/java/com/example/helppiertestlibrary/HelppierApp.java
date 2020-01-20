@@ -319,9 +319,7 @@ public class HelppierApp {
     // inflates client activity with our webview UI
     private BubbleWebView renderWebviewUI(int childId) {
         BubbleWebView myWebView = new BubbleWebView(activity, view, childId);
-        myWebView.setId(123);
         vg.addView(myWebView);
-        myWebView.position();
         return myWebView;
     }
 
