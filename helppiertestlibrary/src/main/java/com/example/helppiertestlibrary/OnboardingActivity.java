@@ -30,7 +30,7 @@ public class OnboardingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_onboarding);
 
         Intent intent = getIntent();
-        String message = intent.getStringExtra(HelppierApp.IMAGES_LIST);
+        String message = intent.getStringExtra(OnboardingRequest.IMAGES_LIST);
         try {
             imagesList = new JSONArray(message);
             totalImages = imagesList.length();

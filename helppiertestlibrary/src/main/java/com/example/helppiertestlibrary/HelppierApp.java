@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -43,34 +42,7 @@ public class HelppierApp {
     private ViewGroup vg;
     // reference to our screen shot UI
     private View screenshotUI;
-
-    public static final String IMAGES_LIST = "com.example.helppierTestLibrary.IMAGES_LIST";
-
-
-    // event listener for the screenshot button
-    private View.OnClickListener screenshotListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            // takeScreenshot();
-            // requestOnboarding();
-
-
-            ConstraintSet constraintSet = new ConstraintSet();
-            // constraintSet.clone()
-            constraintSet.clone((ConstraintLayout)view);
-
-
-            // int targetBtnCode = -1000003;
-            // constraintSet.connect(R.id.button, ConstraintSet.TOP, targetBtnCode, ConstraintSet.BOTTOM);
-            // constraintSet.connect(R.id.button, ConstraintSet.LEFT, targetBtnCode, ConstraintSet.RIGHT);
-
-            // constraintSet.connect(v.getId(), ConstraintSet.LEFT, R.id.randomText, ConstraintSet.LEFT, 0);
-            // constraintSet.connect(v.getId(), ConstraintSet.RIGHT, R.id.randomText, ConstraintSet.RIGHT, 0);
-            // constraintSet.connect(v.getId(), ConstraintSet.TOP, R.id.randomText, ConstraintSet.TOP, 0);
-            constraintSet.connect(v.getId(), ConstraintSet.BOTTOM, R.id.randomText, ConstraintSet.TOP, 0);
-            constraintSet.applyTo((ConstraintLayout)view);
-        }
-    };
+    private String requestUrl = "http://10.0.2.2:3000/widget/android/";
 
     public HelppierApp(String helppierKey, Activity activity, View view) {
         this.helppierKey = helppierKey;
@@ -81,22 +53,6 @@ public class HelppierApp {
         ViewGroup vg = (ViewGroup) view;
         this.vg = vg;
 
-    }
-
-    private void positionWebViewRelativeToElement(WebView webview, int elementId) {
-        if(view instanceof ConstraintLayout) {
-            ConstraintSet constraintSet = new ConstraintSet();
-            constraintSet.clone((ConstraintLayout) view);
-            // constraintSet.connect(elementId, ConstraintSet.BOTTOM, webviewId, ConstraintSet.TOP, 0);
-            constraintSet.connect(webview.getId(), ConstraintSet.TOP, elementId, ConstraintSet.BOTTOM, 0);
-            constraintSet.applyTo((ConstraintLayout) view);
-        } else if(view instanceof RelativeLayout) {
-            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)webview.getLayoutParams();
-            params.height = RelativeLayout.LayoutParams.WRAP_CONTENT;
-            params.width = RelativeLayout.LayoutParams.WRAP_CONTENT;
-            params.addRule(RelativeLayout.ALIGN_TOP, elementId);
-            webview.setLayoutParams(params);
-        }
     }
 
     private void positionOverlay(View layout, int layoutId) {
@@ -177,64 +133,13 @@ public class HelppierApp {
         Toast.makeText(activity, "This layout does not support selection", Toast.LENGTH_SHORT).show();
     }
 
-    public void init() {
-        requestOnboarding();
-        // renderScreenshotUI();
-        // renderWebviewUI();
-        renderOverlay();
-
-        //new Timer().scheduleAtFixedRate(new TimerTask() {
-        //    @Override
-        //    public void run() {
-        //        View focusedView = activity.getCurrentFocus();
-        //    }
-        // }, 0, 10000);
-
-
-        // view.setOnTouchListener(new View.OnTouchListener() {
-            // @Override
-            // public boolean onTouch(View view, MotionEvent event) {
-
-                // int[] myIntArray = new int[]{event.getX(), event.getY()};
-                // int x = Math.round(event.getX());
-                // int y = Math.round(event.getY());
-
-
-
-               // for (int i=0; i < vg.getChildCount(); i++) {
-                    //View child = vg.getChildAt(i);
-                   // if(x > child.getLeft() && x < child.getRight()
-                 //   && y > child.getTop() && y < child.getBottom()) {
-                        //if(event.getAction() == MotionEvent.ACTION_UP) {
-               //             Log.i("Match Element", Integer.toString(child.getId()));
-                        // }
-             //       }
-           //     }
-                // int[] deltas = new int[2];
-                // View nextFocus = FocusFinder.getInstance().findNearestTouchable(vg, x, y, View.FOCUS_LEFT, deltas);
-
-                // view.getLocationOnScreen(myIntArray);
-
-                // Check if the button is PRESSED
-                // if (event.getAction() == MotionEvent.ACTION_DOWN){
-                    //do some thing
-                // }// Check if the button is RELEASED
-                // else if (event.getAction() == MotionEvent.ACTION_UP) {
-                    //do some thing
-                // }
-                // return false;
-                //return false;
-        //    }
-        // });
+    private void requestOnboarding() {
+        new OnboardingRequest(activity, helppierKey, requestUrl);
     }
 
-    private void renderScreenshot(Bitmap bitmap) {
-        // ImageView screenshotView = activity.findViewById(R.id.screenShot);
-
-        // Canvas canvas = new Canvas(bitmap);
-        // view.draw(canvas);
-
-        // screenshotView.setImageBitmap(bitmap);
+    public void init() {
+        requestOnboarding();
+        renderOverlay();
     }
 
 
@@ -248,19 +153,6 @@ public class HelppierApp {
 
     // inflates client activity with our screnshot UI
     private void renderScreenshotUI() {
-        // Button addScreenshot = new Button(activity);
-        // addScreenshot.setText("Capture Screenshota");
-        // int btnId = View.generateViewId();
-        // addScreenshot.setId(btnId);
-        // addScreenshot.setOnClickListener(screenshotListener);
-        // view.addView(addScreenshot);
-
-        // LayoutInflater layoutInflater = activity.getLayoutInflater();
-        // screenshotUI = layoutInflater.inflate(R.layout.screenshot, null, true);
-        // view.addView(screenshotUI);
-
-        // Button addScreenshot = activity.findViewById(R.id.btnScreenshot);
-        // addScreenshot.setOnClickListener(screenshotListener);
         TextView topBox = new TextView(activity);
         topBox.setText("TopBox");
         int topBoxId = View.generateViewId();
@@ -283,7 +175,6 @@ public class HelppierApp {
         addScreenshot.setText("Capture Screenshota");
         final int btnId = View.generateViewId();
         addScreenshot.setId(btnId);
-        // addScreenshot.setOnClickListener(screenshotListener);
 
         addScreenshot.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -407,10 +298,6 @@ public class HelppierApp {
             RequestQueue queue = Volley.newRequestQueue(activity);
             //Adding request to the queue
             queue.add(stringRequest);
-
-            renderScreenshot(bitmap);
-
-
         } catch (Throwable e) {
             Log.i("TakeScreenShotFailed", "Taking screenshot failed");
 
@@ -419,77 +306,5 @@ public class HelppierApp {
         }
     }
 
-    // take the screenshot and upload it
-    private void requestOnboarding() {
-        final Activity finalActivity = activity;
 
-        Log.i("RequestOnboarding", "Request onboarding");
-
-        try {
-            StringRequest stringRequest = new StringRequest(
-                    Request.Method.POST,
-                    "http://10.0.2.2:3000/widget/android/onboarding",
-                    new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            //Showing toast message of the response
-                            try {
-                                if (response != "") {
-                                    Log.i("ImagesReceived", response);
-                                    Toast.makeText(finalActivity, "Images received", Toast.LENGTH_LONG).show();
-                                    Intent intent = new Intent(activity, OnboardingActivity.class);
-                                    intent.putExtra(IMAGES_LIST, response);
-                                    activity.startActivity(intent);
-                                } else {
-                                    Toast.makeText(finalActivity, "Error: " + response, Toast.LENGTH_LONG).show();
-                                }
-                            } catch (Exception ex) {
-                                Toast.makeText(finalActivity, "Failed to get images.", Toast.LENGTH_LONG).show();
-                            }
-                        }
-                    },
-                    new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError volleyError) {
-
-                            //Showing toast
-                            try {
-                                JSONObject jsonObject = new JSONObject(volleyError.getMessage());
-                                int responseCode = Integer.parseInt(jsonObject.getString("responseCode"));
-                                String response = jsonObject.getString("response");
-                                if (responseCode == 1) {
-                                    Toast.makeText(finalActivity, response, Toast.LENGTH_LONG).show();
-                                } else {
-                                    Toast.makeText(finalActivity, "Error: " + response, Toast.LENGTH_LONG).show();
-                                }
-                            } catch (Exception ex) {
-                                Toast.makeText(finalActivity, "Failed to get images.", Toast.LENGTH_LONG).show();
-                            }
-                        }
-                    }){
-                @Override
-                protected Map<String, String> getParams() throws AuthFailureError {
-                    //Creating parameters
-                    Map<String,String> params = new Hashtable<>();
-
-                    params.put("helppierKey", helppierKey);
-                    params.put("helppierKeAy", "asd");
-
-
-                    //returning parameters
-                    return params;
-                }
-            };
-
-            RequestQueue queue = Volley.newRequestQueue(activity);
-            //Adding request to the queue
-            queue.add(stringRequest);
-
-        } catch (Throwable e) {
-            Log.i("GetScreenShotFailed", "Getting screenshot failed");
-
-            // Several error may come out with file handling or DOM
-            e.printStackTrace();
-        }
-    }
 }
