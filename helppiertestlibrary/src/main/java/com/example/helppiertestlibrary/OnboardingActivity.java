@@ -32,11 +32,11 @@ public class OnboardingActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String message = intent.getStringExtra(OnboardingRequest.IMAGES_LIST);
         try {
-            imagesList = new JSONArray(message);
-            totalImages = imagesList.length();
-            prepareBtns();
-            loadImage();
-            updateCounter(currentIndex);
+            this.imagesList = new JSONArray(message);
+            this.totalImages = imagesList.length();
+            this.prepareBtns();
+            this.loadImage();
+            this.updateCounter(currentIndex);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -60,17 +60,16 @@ public class OnboardingActivity extends AppCompatActivity {
 
 
     private void updateUIAfterAction(int nextIndex) {
-        currentIndex = nextIndex;
-        loadImage();
-        updateButtons(currentIndex);
-        updateCounter(currentIndex);
+        this.currentIndex = nextIndex;
+        this.loadImage();
+        this.updateButtons(this.currentIndex);
+        this.updateCounter(this.currentIndex);
     }
 
     private void setupNextEventListener(Button nextBtn) {
         nextBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 updateUIAfterAction(currentIndex + 1);
-
             }
         });
     }
@@ -79,7 +78,7 @@ public class OnboardingActivity extends AppCompatActivity {
         previousBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                updateUIAfterAction(currentIndex - 1);
+            updateUIAfterAction(currentIndex - 1);
             }
         });
     }
@@ -99,17 +98,16 @@ public class OnboardingActivity extends AppCompatActivity {
         Button skipBtn = findViewById(R.id.skipBtn);
         ImageView image = findViewById(R.id.onboardingimage);
 
-        validateBtnVisibility(nextBtn);
-        setupSwipeImageEventListeners(image);
-        setupBtnEventListeners(nextBtn, previousBtn, skipBtn);
+        this.validateBtnVisibility(nextBtn);
+        this.setupSwipeImageEventListeners(image);
+        this.setupBtnEventListeners(nextBtn, previousBtn, skipBtn);
     }
 
     private void updateButtons(int nextIndex) {
-        boolean[] btnStatus = validateTest(nextIndex);
+        boolean[] btnStatus = this.validateTest(nextIndex);
 
         Button nextBtn = findViewById(R.id.nextBtn);
         nextBtn.setVisibility(btnStatus[0] ? View.VISIBLE : View.INVISIBLE);
-
 
         Button previousBtn = findViewById(R.id.previousBtn);
         previousBtn.setVisibility(btnStatus[1] ? View.VISIBLE : View.INVISIBLE);
@@ -165,17 +163,15 @@ public class OnboardingActivity extends AppCompatActivity {
     }
 
     private void setupBtnEventListeners(Button nextBtn, Button previousBtn, Button skipBtn) {
-        setupNextEventListener(nextBtn);
-        setupPreviousEventListener(previousBtn);
-        setupSkipEventListener(skipBtn);
+        this.setupNextEventListener(nextBtn);
+        this.setupPreviousEventListener(previousBtn);
+        this.setupSkipEventListener(skipBtn);
     }
 
     private void setupSwipeImageEventListeners(ImageView image) {
         image.setOnTouchListener(new View.OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
-
                 // have same code as onTouchEvent() (for the Activity) above
-
                 int action = event.getActionMasked();
                 Log.d("ACTION ON TOUCH", String.valueOf(action));
                 switch(action) {
