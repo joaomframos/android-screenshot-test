@@ -14,13 +14,21 @@ public class BubbleWebViewInterface {
         bubbleWebView = bwv;
     }
 
-    /** Show a toast from the web page */
     @JavascriptInterface
     public void getBubbleSize(final int width, final int height) {
         ((Activity) mContext).runOnUiThread(new Runnable() {
             public void run() {
                 bubbleWebView.setSize(width, height);
                 bubbleWebView.positionBubble();
+            }
+        });
+    }
+
+    @JavascriptInterface
+    public void closeBubble() {
+        ((Activity) mContext).runOnUiThread(new Runnable() {
+            public void run() {
+                bubbleWebView.closeBubble();
             }
         });
     }

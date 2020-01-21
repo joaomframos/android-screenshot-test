@@ -70,4 +70,8 @@ public class BubbleWebView extends WebView {
         }
     }
 
+    public void closeBubble() {
+        ((ViewGroup)this.view).removeView(this.bubble);
+    }
+
 }
