@@ -21,15 +21,15 @@ import java.util.Map;
 public class OnboardingRequest {
     final Activity activity;
     String helppierKey;
-    String requestUrl;
+    String helppierRequestUrl;
     String requestPath = "/onboarding";
 
     public static final String IMAGES_LIST = "com.example.helppierTestLibrary.IMAGES_LIST";
 
-    public OnboardingRequest(Activity activity, String helppierKey, String requestUrl) {
+    public OnboardingRequest(Activity activity, String helppierKey, String helppierRequestUrl) {
         this.activity = activity;
         this.helppierKey = helppierKey;
-        this.requestUrl = requestUrl;
+        this.helppierRequestUrl = helppierRequestUrl;
 
         // check the onboarding on startup
         validateAutomaticOnboarding();
@@ -50,7 +50,7 @@ public class OnboardingRequest {
         try {
             StringRequest stringRequest = new StringRequest(
                     Request.Method.POST,
-                    requestUrl + requestPath,
+                    helppierRequestUrl + requestPath,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {

@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.webkit.JavascriptInterface;
 
-public class BubbleWebViewInterface {   
+public class BubbleWebViewInterface {
     Context mContext;
     BubbleWebView bubbleWebView;
 

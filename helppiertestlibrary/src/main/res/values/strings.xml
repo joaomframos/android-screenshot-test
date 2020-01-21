@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Helppier Test Library</string>
+    <string name="screenshot_text">Capture Screenshot</string>
 </resources>
