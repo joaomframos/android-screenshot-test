@@ -55,90 +55,14 @@ public class HelppierApp {
 
     }
 
-    private void positionOverlay(View layout, int layoutId) {
-        if(view instanceof ConstraintLayout) {
-            ConstraintSet constraintSet = new ConstraintSet();
-            constraintSet.clone((ConstraintLayout)view);
-            constraintSet.connect(layoutId, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START, 0);
-            constraintSet.connect(layoutId, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END, 0);
-            constraintSet.connect(layoutId, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, 0);
-            constraintSet.connect(layoutId, ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM, 0);
-            constraintSet.constrainDefaultHeight(layoutId, ConstraintSet.MATCH_CONSTRAINT_SPREAD);
-            constraintSet.constrainDefaultWidth(layoutId, ConstraintSet.MATCH_CONSTRAINT_SPREAD);
-            constraintSet.applyTo((ConstraintLayout)view);
-        } else if(view instanceof LinearLayout) {
-            // does not work
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-            layout.setLayoutParams(params);
-        } else if(view instanceof RelativeLayout) {
-            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)layout.getLayoutParams();
-            params.height = RelativeLayout.LayoutParams.MATCH_PARENT;
-            params.width = RelativeLayout.LayoutParams.MATCH_PARENT;
-            params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-            layout.setLayoutParams(params);
-        }
-    }
-
-    @TargetApi(21)
-    private void renderOverlay() {
-
-        if(view instanceof ConstraintLayout || view instanceof  RelativeLayout) {
-            final LinearLayout layout = new LinearLayout(activity);
-            int layoutId = View.generateViewId();
-            layout.setId(layoutId);
-            // layout.setBackgroundColor(Color.parseColor("#00611C1C"));
-            layout.setBackgroundColor(Color.RED);
-            layout.setAlpha(0.5f);
-            layout.setElevation(10f);
-            layout.setOrientation(LinearLayout.HORIZONTAL);
-
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, 0);
-
-            layout.setLayoutParams(lp);
-
-            vg.addView(layout);
-
-            positionOverlay(layout, layoutId);
-
-            layout.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View view, MotionEvent event) {
-                    // new BubbleWebView(activity);
-                    int x = Math.round(event.getX());
-                    int y = Math.round(event.getY());
-
-                    int elementId = view.getId();
-
-                    for (int i = 0; i < vg.getChildCount(); i++) {
-                        View child = vg.getChildAt(i);
-                        int childId = child.getId();
-                        if (childId != elementId
-                                && x > child.getLeft() && x < child.getRight()
-                                && y > child.getTop() && y < child.getBottom()) {
-                            if (event.getAction() == MotionEvent.ACTION_UP) {
-                                Log.i("Match Element", Integer.toString(childId));
-                                BubbleWebView webview = renderWebviewUI(childId);
-                                vg.removeView(layout);
-
-                            }
-                        }
-                    }
-
-                    return true;
-                }
-            });
-            return;
-        }
-
-        Toast.makeText(activity, "This layout does not support selection", Toast.LENGTH_SHORT).show();
-    }
-
-    private void requestOnboarding() {
+    private void requestOnBoarding() {
         new OnboardingRequest(activity, helppierKey, requestUrl);
     }
 
+    private void renderOverlay() { new RecordingOverlay(activity, view); }
+
     public void init() {
-        requestOnboarding();
+        requestOnBoarding();
         renderOverlay();
     }
 
@@ -205,13 +129,6 @@ public class HelppierApp {
         // constraintSet.connect(btnId, ConstraintSet.BOTTOM, bottomBoxId, ConstraintSet.TOP, 0);
 
         constraintSet.applyTo((ConstraintLayout)view);
-    }
-
-    // inflates client activity with our webview UI
-    private BubbleWebView renderWebviewUI(int childId) {
-        BubbleWebView myWebView = new BubbleWebView(activity, view, childId);
-        vg.addView(myWebView);
-        return myWebView;
     }
 
     // removes the screenshot UI we appended to the clients view
