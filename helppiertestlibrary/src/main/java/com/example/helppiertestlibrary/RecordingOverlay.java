@@ -91,7 +91,7 @@ public class RecordingOverlay extends LinearLayout {
     }
 
     private void removeOverlay() {
-        vg.removeView(this);
+        vg.removeView(this.overlay);
     }
 
     private void requestBubbleRender(Context context, int childId) {
