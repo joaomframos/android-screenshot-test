@@ -17,7 +17,10 @@ public class BubbleWebView extends WebView {
     int elementId;
     WebView bubble;
 
-    public BubbleWebView(Context context, View view, int elementId) {
+    final String requestPath = "/backoffice/mobilebubble";
+    final String javascriptNamespace = "Android";
+
+    public BubbleWebView(Context context, View view, String helppierRequestUrl, int elementId) {
         super(context);
 
         this.elementId = elementId;
@@ -31,15 +34,15 @@ public class BubbleWebView extends WebView {
         // set the access to the webview route
         WebSettings webSettings = this.bubble.getSettings();
         webSettings.setJavaScriptEnabled(true);
-        this.bubble.loadUrl("http://10.0.2.2:3000/widget/backoffice/mobilebubble");
+        this.bubble.loadUrl(helppierRequestUrl + this.requestPath);
 
         // setup the javascript interface to determine the size required
         this.bubble.setWebContentsDebuggingEnabled(true);
-        this.bubble.addJavascriptInterface(new BubbleWebViewInterface(context, this), "Android");
+        this.bubble.addJavascriptInterface(new BubbleWebViewInterface(context, this), this.javascriptNamespace);
     }
 
     public void setSize(int width, int height) {
-        float density = getResources().getDisplayMetrics().density;
+        float density = this.getResources().getDisplayMetrics().density;
 
         ViewGroup.LayoutParams lpWebView = this.bubble.getLayoutParams();
         float heightF = height * density;
@@ -55,9 +58,9 @@ public class BubbleWebView extends WebView {
     public void positionBubble() {
         if(view instanceof ConstraintLayout) {
             ConstraintSet constraintSet = new ConstraintSet();
-            constraintSet.clone((ConstraintLayout) view);
-            constraintSet.connect(R.id.bubbleWebview, ConstraintSet.TOP, elementId, ConstraintSet.BOTTOM, 0);
-            constraintSet.applyTo((ConstraintLayout) view);
+            constraintSet.clone((ConstraintLayout)this.view);
+            constraintSet.connect(R.id.bubbleWebview, ConstraintSet.TOP, this.elementId, ConstraintSet.BOTTOM, 0);
+            constraintSet.applyTo((ConstraintLayout)this.view);
         } else if(view instanceof RelativeLayout) {
             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)this.bubble.getLayoutParams();
             params.height = RelativeLayout.LayoutParams.WRAP_CONTENT;

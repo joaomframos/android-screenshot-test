@@ -10,13 +10,12 @@ public class HelppierApp {
     private Activity activity;
     // the current view in use
     private View view;
-    private final String helppierRequestUrl = "http://10.0.2.2:3000/widget/android/";
+    private final String helppierRequestUrl = "http://10.0.2.2:3000/widget";
 
     public HelppierApp(String helppierKey, Activity activity, View view) {
         this.helppierKey = helppierKey;
         this.activity = activity;
         this.view = view;
-
     }
 
     private void requestOnBoarding() {
@@ -24,18 +23,21 @@ public class HelppierApp {
     }
 
     private void renderOverlay() {
-        new RecordingOverlay(this.activity, this.view);
+        new RecordingOverlay(this.activity, this.view, this.helppierRequestUrl);
     }
 
     // inflates client activity with our screenshot UI
+    // TODO: Screenshot process is a secondary and should not be enable by default
     private void renderScreenshotUI() {
         new ScreenshotUI(this.activity, this.view, this.helppierKey, this.helppierRequestUrl);
     }
 
     public void init() {
-        requestOnBoarding();
-        // renderOverlay();
-        renderScreenshotUI();
+        this.requestOnBoarding();
+        this.renderOverlay();
+
+        // TODO: Screenshot process is a secondary and should not be enable by default
+        // renderScreenshotUI();
     }
 
 

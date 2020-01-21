@@ -22,7 +22,7 @@ public class OnboardingRequest {
     final Activity activity;
     String helppierKey;
     String helppierRequestUrl;
-    String requestPath = "/onboarding";
+    final String requestPath = "/android/onboarding";
 
     public static final String IMAGES_LIST = "com.example.helppierTestLibrary.IMAGES_LIST";
 
@@ -32,14 +32,13 @@ public class OnboardingRequest {
         this.helppierRequestUrl = helppierRequestUrl;
 
         // check the onboarding on startup
-        validateAutomaticOnboarding();
-        // TODO: Add a mechanism to request onboarding per Activity change
+        this.validateAutomaticOnboarding();
     }
 
     private void validateAutomaticOnboarding() {
-        // add some interesting validation here
+        // TODO: Add a mechanism to request onboarding per Activity change
         if(true) {
-            requestOnboarding();
+            this.requestOnboarding();
         }
     }
 

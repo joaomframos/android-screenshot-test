@@ -31,6 +31,7 @@ public class ScreenshotUI extends ConstraintLayout {
     Button screenshotBtn;
     final String helppierKey;
     final String helppierRequestUrl;
+    final String requestPath = "/android/screenshot";
 
     public ScreenshotUI(Context context, View view, String helppierKey, String helppierRequestUrl) {
         super(context);
@@ -65,6 +66,7 @@ public class ScreenshotUI extends ConstraintLayout {
         return Base64.encodeToString(byteArray, Base64.DEFAULT);
     }
 
+    // TODO: This is helpful for debugging purposes but should never be called otherwise
     private void renderScreenshot(Bitmap bitmap) {
         new ScreenshotHelper(getContext(), this.view, bitmap);
     }
@@ -94,7 +96,7 @@ public class ScreenshotUI extends ConstraintLayout {
 
             StringRequest stringRequest = new StringRequest(
                     Request.Method.POST,
-                    "http://10.0.2.2:3000/widget/android/screenshot",
+                    this.helppierRequestUrl + requestPath,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {

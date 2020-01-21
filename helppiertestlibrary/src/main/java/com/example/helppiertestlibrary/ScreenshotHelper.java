@@ -24,7 +24,7 @@ public class ScreenshotHelper extends ImageView {
 
         this.imageView = view.findViewById(R.id.screenshotHelper);
 
-        renderBitmap();
+        this.renderBitmap();
     }
 
     private void renderBitmap() {
