@@ -13,9 +13,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val layoutView = findViewById<View>(R.id.layout)
-        Log.i("ID Target Btn", Integer.toString(R.id.clientTarget));
+        Log.i("ID Target Btn", Integer.toString(R.id.clientTarget))
 
-        HelppierApp("HELPPIER_FAKE_KEY",this, layoutView).init()
+        HelppierApp("HELPPIER_FAKE_KEY",this, layoutView)
 
     }
 }

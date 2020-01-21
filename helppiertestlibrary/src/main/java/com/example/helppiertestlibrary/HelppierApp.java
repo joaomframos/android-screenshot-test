@@ -16,6 +16,12 @@ public class HelppierApp {
         this.helppierKey = helppierKey;
         this.activity = activity;
         this.view = view;
+
+        this.requestOnBoarding();
+        this.renderOverlay();
+
+        // TODO: Screenshot process is a secondary and should not be enable by default
+        // renderScreenshotUI();
     }
 
     private void requestOnBoarding() {
@@ -31,14 +37,4 @@ public class HelppierApp {
     private void renderScreenshotUI() {
         new ScreenshotUI(this.activity, this.view, this.helppierKey, this.helppierRequestUrl);
     }
-
-    public void init() {
-        this.requestOnBoarding();
-        this.renderOverlay();
-
-        // TODO: Screenshot process is a secondary and should not be enable by default
-        // renderScreenshotUI();
-    }
-
-
 }
