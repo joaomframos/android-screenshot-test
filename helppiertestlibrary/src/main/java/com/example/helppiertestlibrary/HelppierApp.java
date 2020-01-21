@@ -1,18 +1,12 @@
 package com.example.helppiertestlibrary;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.util.Base64;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 

@@ -95,7 +95,6 @@ public class RecordingOverlay extends LinearLayout {
     }
 
     private void requestBubbleRender(Context context, int childId) {
-        BubbleWebView myWebView = new BubbleWebView(context, view, childId);
-        vg.addView(myWebView);
+        new BubbleWebView(context, view, childId);
     }
 }
